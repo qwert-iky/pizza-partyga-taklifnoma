@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="uz" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🍕 Pizza Party! - She'rozbek Baxtiyorov</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- TailwindCSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Tailwind Config -->
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            pizza: {
+              red:    '#DC2626',
+              yellow: '#FCD34D',
+              brown:  '#78350F',
+              orange: '#EA580C',
+              cream:  '#FEF3C7',
+            }
+          },
+          fontFamily: {
+            fredoka: ['Fredoka One', 'cursive'],
+            nunito:  ['Nunito', 'sans-serif'],
+          },
+          animation: {
+            'float':       'float 3s ease-in-out infinite',
+            'float-slow':  'float 5s ease-in-out infinite',
+            'float-fast':  'float 2s ease-in-out infinite',
+            'bounce-slow': 'bounce 2s infinite',
+            'spin-slow':   'spin 8s linear infinite',
+            'fade-in':     'fadeIn 0.6s ease-out forwards',
+            'slide-in':    'slideIn 0.5s ease-out forwards',
+            'confetti':    'confettiFall 3s ease-in forwards',
+          },
+          keyframes: {
+            float: {
+              '0%, 100%': { transform: 'translateY(0px)' },
+              '50%':       { transform: 'translateY(-20px)' },
+            },
+            fadeIn: {
+              '0%':   { opacity: '0', transform: 'translateY(30px)' },
+              '100%': { opacity: '1', transform: 'translateY(0)' },
+            },
+            slideIn: {
+              '0%':   { opacity: '0', transform: 'translateX(-30px)' },
+              '100%': { opacity: '1', transform: 'translateX(0)' },
+            },
+            confettiFall: {
+              '0%':   { transform: 'translateY(-100vh) rotate(0deg)', opacity: '1' },
+              '100%': { transform: 'translateY(100vh) rotate(720deg)', opacity: '0' },
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* ===================== BASE STYLES ===================== */
+    body {
+      font-family: 'Nunito', sans-serif;
+      background-color: #FEF3C7;
+      transition: background-color 0.4s, color 0.4s;
+    }
+    .dark body, body.dark-mode {
+      background-color: #1a1a1a;
+    }
+
+    /* ===================== PIZZA BG PATTERN ===================== */
+    .pizza-pattern {
+      background-color: #FEF9EE;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80'%3E%3Ctext x='10' y='50' font-size='40' opacity='0.07'%3E%F0%9F%8D%95%3C/text%3E%3C/svg%3E");
+    }
+    .dark .pizza-pattern {
+      background-color: #111827;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80'%3E%3Ctext x='10' y='50' font-size='40' opacity='0.05'%3E%F0%9F%8D%95%3C/text%3E%3C/svg%3E");
+    }
+
+    /* ===================== SCROLL ANIMATIONS ===================== */
+    .reveal {
+      opacity: 0;
+      transform: translateY(40px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ===================== CONFETTI ===================== */
+    #confetti-container {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 9999;
+      overflow: hidden;
+    }
+    .confetti-piece {
+      position: absolute;
+      top: -20px;
+      font-size: 1.5rem;
+      animation: confettiFall var(--duration) ease-in forwards;
+      animation-delay: var(--delay);
+    }
+    @keyframes confettiFall {
+      0%   { transform: translateY(-50px) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+    }
+
+    /* ===================== FLOATING PIZZAS ===================== */
+    .floating-pizza {
+      position: absolute;
+      pointer-events: none;
+      user-select: none;
+      animation: float var(--dur, 3s) ease-in-out infinite;
+      animation-delay: var(--delay, 0s);
+      opacity: 0.5;
+    }
+
+    /* ===================== PROGRESS BAR ===================== */
+    .vote-bar-fill {
+      transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* ===================== CARD HOVER ===================== */
+    .card-hover {
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+    .card-hover:hover {
+      transform: scale(1.05);
+      box-shadow: 0 20px 40px rgba(220,38,38,0.2);
+    }
+
+    /* ===================== BUTTON STYLES ===================== */
+    .btn-pizza {
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .btn-pizza:hover  { transform: scale(1.04); }
+    .btn-pizza:active { transform: scale(0.97); }
+
+    /* ===================== GUEST SLIDE IN ===================== */
+    .guest-item {
+      animation: slideIn 0.5s ease-out forwards;
+    }
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(-30px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+
+    /* ===================== DARK MODE TOGGLE ===================== */
+    .dark-toggle-btn {
+      transition: background-color 0.3s, transform 0.3s;
+    }
+
+    /* ===================== SECTION HEADINGS ===================== */
+    .section-heading {
+      font-family: 'Fredoka One', cursive;
+      letter-spacing: 1px;
+    }
+
+    /* ===================== SCROLLBAR ===================== */
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: #FEF3C7; }
+    ::-webkit-scrollbar-thumb { background: #DC2626; border-radius: 4px; }
+    .dark ::-webkit-scrollbar-track { background: #1f2937; }
+  </style>
+</head>
+
+<body class="pizza-pattern min-h-screen dark:bg-gray-900 dark:text-white transition-colors duration-300">
+
+  <!-- ==================== CONFETTI CONTAINER ==================== -->
+  <div id="confetti-container"></div>
+
+  <!-- ==================== NAVBAR ==================== -->
+  <nav class="sticky top-0 z-50 bg-pizza-red/95 backdrop-blur-sm shadow-lg">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+      <span class="font-fredoka text-white text-2xl tracking-wide">🍕 PizzaParty</span>
+      <div class="flex items-center gap-4">
+        <a href="#rsvp"  class="text-pizza-yellow font-nunito font-bold hover:text-white transition-colors hidden sm:block">RSVP</a>
+        <a href="#vote"  class="text-pizza-yellow font-nunito font-bold hover:text-white transition-colors hidden sm:block">Ovoz</a>
+        <!-- Dark mode toggle -->
+        <button id="dark-toggle" class="dark-toggle-btn bg-pizza-yellow/20 hover:bg-pizza-yellow/40 text-white px-3 py-1.5 rounded-full font-bold text-sm flex items-center gap-1.5">
+          <span id="dark-icon">🌙</span>
+          <span id="dark-label" class="hidden sm:inline">Dark</span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ==================== HERO SECTION ==================== -->
+  <section id="hero" class="relative overflow-hidden min-h-screen flex flex-col items-center justify-center text-center px-4 py-20"
+           style="background: linear-gradient(135deg, #DC2626 0%, #EA580C 50%, #78350F 100%);">
+
+    <!-- Floating pizza emojis -->
+    <div class="floating-pizza text-6xl" style="--dur:3s;  --delay:0s;   left:5%;  top:15%;">🍕</div>
+    <div class="floating-pizza text-5xl" style="--dur:4s;  --delay:0.5s; right:8%; top:20%;">🍕</div>
+    <div class="floating-pizza text-7xl" style="--dur:5s;  --delay:1s;   left:15%; bottom:20%;">🍕</div>
+    <div class="floating-pizza text-4xl" style="--dur:3.5s;--delay:1.5s; right:15%;bottom:30%;">🍕</div>
+    <div class="floating-pizza text-5xl" style="--dur:4.5s;--delay:0.8s; left:35%; top:8%;">🍕</div>
+    <div class="floating-pizza text-6xl" style="--dur:3.2s;--delay:2s;   right:30%;bottom:10%;">🍕</div>
+    <div class="floating-pizza text-3xl" style="--dur:2.8s;--delay:0.3s; left:2%;  bottom:40%;">🍕</div>
+    <div class="floating-pizza text-4xl" style="--dur:5s;  --delay:1.2s; right:3%; bottom:50%;">🍕</div>
+
+    <!-- Main hero content -->
+    <div class="relative z-10 max-w-3xl">
+      <div class="text-8xl md:text-9xl mb-6 animate-bounce-slow">🍕</div>
+      <h1 class="font-fredoka text-5xl md:text-7xl lg:text-8xl text-white mb-4 drop-shadow-2xl"
+          style="text-shadow: 3px 3px 0 #78350F, 6px 6px 0 rgba(0,0,0,0.2);">
+        PIZZA PARTY!
+      </h1>
+      <p class="font-fredoka text-2xl md:text-3xl text-pizza-yellow mb-6 animate-float"
+         style="text-shadow: 2px 2px 0 #78350F;">
+        🎉 Siz taklif qilindingiz! 🎉
+      </p>
+      <p class="font-nunito text-lg md:text-xl text-white/90 mb-10 max-w-xl mx-auto leading-relaxed">
+        She'rozbek "Sensey" Baxtiyorov sizni eng mashhur pizza party'ga taklif qilmoqda!
+        Kino, pizza va ko'ngil ochar bir kecha siz bilan bo'ladi.
+      </p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <a href="#rsvp"
+           class="btn-pizza inline-block bg-pizza-yellow text-pizza-brown font-nunito font-black text-lg px-8 py-4 rounded-2xl shadow-xl hover:shadow-2xl">
+          Ha, Boraman! 🍕
+        </a>
+        <a href="#event-info"
+           class="btn-pizza inline-block bg-white/20 backdrop-blur text-white font-nunito font-bold text-lg px-8 py-4 rounded-2xl border-2 border-white/40 hover:bg-white/30">
+          Batafsil 📋
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== EVENT INFO SECTION ==================== -->
+  <section id="event-info" class="py-20 px-4">
+    <div class="max-w-5xl mx-auto">
+      <div class="text-center mb-14 reveal">
+        <h2 class="section-heading text-5xl md:text-6xl text-pizza-red mb-3">📋 Tadbir Ma'lumotlari</h2>
+        <p class="font-nunito text-gray-600 dark:text-gray-300 text-lg">Sana, vaqt va joyni unutmang!</p>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <!-- Sana -->
+        <div class="card-hover reveal bg-white dark:bg-gray-800 rounded-3xl p-7 text-center shadow-lg border-t-4 border-pizza-red">
+          <div class="text-5xl mb-4">📅</div>
+          <h3 class="font-fredoka text-pizza-red text-xl mb-2">Sana</h3>
+          <p class="font-nunito font-bold text-gray-800 dark:text-white text-lg">25-noyabr, 2024</p>
+          <p class="font-nunito text-gray-500 dark:text-gray-400">Shanba kuni</p>
+        </div>
+        <!-- Vaqt -->
+        <div class="card-hover reveal bg-white dark:bg-gray-800 rounded-3xl p-7 text-center shadow-lg border-t-4 border-pizza-yellow">
+          <div class="text-5xl mb-4">⏰</div>
+          <h3 class="font-fredoka text-pizza-brown text-xl mb-2">Vaqt</h3>
+          <p class="font-nunito font-bold text-gray-800 dark:text-white text-lg">Kechki 18:00</p>
+          <p class="font-nunito text-gray-500 dark:text-gray-400">Kech qolmang!</p>
+        </div>
+        <!-- Joy -->
+        <div class="card-hover reveal bg-white dark:bg-gray-800 rounded-3xl p-7 text-center shadow-lg border-t-4 border-pizza-orange">
+          <div class="text-5xl mb-4">📍</div>
+          <h3 class="font-fredoka text-pizza-orange text-xl mb-2">Joy</h3>
+          <p class="font-nunito font-bold text-gray-800 dark:text-white text-lg">Sensey uyi</p>
+          <p class="font-nunito text-gray-500 dark:text-gray-400">She'rozbek uyida</p>
+        </div>
+        <!-- Narx -->
+        <div class="card-hover reveal bg-white dark:bg-gray-800 rounded-3xl p-7 text-center shadow-lg border-t-4 border-green-500">
+          <div class="text-5xl mb-4">💰</div>
+          <h3 class="font-fredoka text-green-600 text-xl mb-2">Narx</h3>
+          <p class="font-nunito font-bold text-gray-800 dark:text-white text-lg">50,000 so'm</p>
+          <p class="font-nunito text-gray-500 dark:text-gray-400">Naqd olib keling</p>
+        </div>
+      </div>
+
+      <!-- Countdown -->
+      <div class="mt-12 reveal text-center bg-gradient-to-r from-pizza-red to-pizza-orange rounded-3xl p-8 text-white shadow-2xl">
+        <p class="font-fredoka text-2xl mb-4">⏳ Qolgan vaqt:</p>
+        <div class="flex justify-center gap-6" id="countdown">
+          <div class="text-center">
+            <span id="count-days"   class="font-fredoka text-5xl block">00</span>
+            <span class="font-nunito text-sm opacity-80">kun</span>
+          </div>
+          <span class="font-fredoka text-5xl">:</span>
+          <div class="text-center">
+            <span id="count-hours"  class="font-fredoka text-5xl block">00</span>
+            <span class="font-nunito text-sm opacity-80">soat</span>
+          </div>
+          <span class="font-fredoka text-5xl">:</span>
+          <div class="text-center">
+            <span id="count-mins"   class="font-fredoka text-5xl block">00</span>
+            <span class="font-nunito text-sm opacity-80">daqiqa</span>
+          </div>
+          <span class="font-fredoka text-5xl">:</span>
+          <div class="text-center">
+            <span id="count-secs"   class="font-fredoka text-5xl block">00</span>
+            <span class="font-nunito text-sm opacity-80">soniya</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== ORGANIZER SECTION ==================== -->
+  <section id="organizer" class="py-20 px-4" style="background: linear-gradient(180deg, transparent, rgba(220,38,38,0.05), transparent);">
+    <div class="max-w-4xl mx-auto">
+      <div class="text-center mb-14 reveal">
+        <h2 class="section-heading text-5xl md:text-6xl text-pizza-red mb-3">👨‍🍳 Organizer</h2>
+        <p class="font-nunito text-gray-600 dark:text-gray-300 text-lg">Bu kechaning bosh qahramoni</p>
+      </div>
+
+      <div class="reveal card-hover bg-white dark:bg-gray-800 rounded-3xl shadow-2xl overflow-hidden">
+        <div class="bg-gradient-to-r from-pizza-red to-pizza-orange h-32 relative">
+          <div class="absolute -bottom-16 left-1/2 -translate-x-1/2 w-32 h-32 bg-pizza-yellow rounded-full border-4 border-white dark:border-gray-800 flex items-center justify-center text-6xl shadow-xl">
+            👨‍🍳
+          </div>
+        </div>
+        <div class="pt-20 pb-10 px-8 text-center">
+          <div class="inline-block bg-pizza-yellow/20 text-pizza-brown font-fredoka text-xl px-5 py-1.5 rounded-full mb-3">
+            "Sensey"
+          </div>
+          <h3 class="font-fredoka text-4xl md:text-5xl text-gray-800 dark:text-white mb-2">
+            She'rozbek Baxtiyorov
+          </h3>
+          <p class="font-nunito text-gray-500 dark:text-gray-400 text-lg mb-6">
+            🏆 Pizza Party Master · 🎬 Kino Eksperti · 🍕 Chief Pizza Officer
+          </p>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-xl mx-auto">
+            <div class="bg-pizza-cream dark:bg-gray-700 rounded-2xl p-4">
+              <div class="text-2xl mb-1">📱</div>
+              <p class="font-nunito font-bold text-gray-700 dark:text-gray-200 text-sm">Telegram</p>
+              <p class="font-nunito text-pizza-red font-bold text-sm">@sensey</p>
+            </div>
+            <div class="bg-pizza-cream dark:bg-gray-700 rounded-2xl p-4">
+              <div class="text-2xl mb-1">🍕</div>
+              <p class="font-nunito font-bold text-gray-700 dark:text-gray-200 text-sm">Maqomi</p>
+              <p class="font-nunito text-pizza-red font-bold text-sm">Pizza Eksperti</p>
+            </div>
+            <div class="bg-pizza-cream dark:bg-gray-700 rounded-2xl p-4">
+              <div class="text-2xl mb-1">🎬</div>
+              <p class="font-nunito font-bold text-gray-700 dark:text-gray-200 text-sm">Qiziqish</p>
+              <p class="font-nunito text-pizza-red font-bold text-sm">Kino &amp; Pizza</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== RSVP SECTION ==================== -->
+  <section id="rsvp" class="py-20 px-4">
+    <div class="max-w-4xl mx-auto">
+      <div class="text-center mb-14 reveal">
+        <h2 class="section-heading text-5xl md:text-6xl text-pizza-red mb-3">🎟️ Taklifnomani Qabul Qil</h2>
+        <p class="font-nunito text-gray-600 dark:text-gray-300 text-lg">O'rningizni band qiling!</p>
+      </div>
+
+      <div class="grid md:grid-cols-2 gap-8">
+        <!-- RSVP Form -->
+        <div class="reveal card-hover bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-xl border border-pizza-red/10">
+          <h3 class="font-fredoka text-2xl text-pizza-red mb-6">📝 Ma'lumotlaringizni kiriting</h3>
+          <form id="rsvp-form" class="space-y-5">
+            <div>
+              <label class="font-nunito font-bold text-gray-700 dark:text-gray-200 block mb-2">👤 Ismingiz</label>
+              <input type="text" id="guest-name" placeholder="Masalan: Alisher Navoi"
+                     class="w-full border-2 border-gray-200 dark:border-gray-600 rounded-xl px-4 py-3 font-nunito text-gray-700 dark:text-gray-200 dark:bg-gray-700 focus:outline-none focus:border-pizza-red transition-colors" required />
+            </div>
+            <div>
+              <label class="font-nunito font-bold text-gray-700 dark:text-gray-200 block mb-2">📱 Telefon raqam</label>
+              <input type="tel" id="guest-phone" placeholder="+998 90 123 45 67"
+                     class="w-full border-2 border-gray-200 dark:border-gray-600 rounded-xl px-4 py-3 font-nunito text-gray-700 dark:text-gray-200 dark:bg-gray-700 focus:outline-none focus:border-pizza-red transition-colors" />
+            </div>
+            <button type="submit" id="rsvp-btn"
+                    class="btn-pizza w-full bg-gradient-to-r from-pizza-red to-pizza-orange text-white font-fredoka text-xl py-4 rounded-2xl shadow-lg hover:shadow-xl">
+              Ha, Boraman! 🍕
+            </button>
+            <div id="rsvp-msg" class="hidden text-center font-nunito font-bold py-2 rounded-xl"></div>
+          </form>
+        </div>
+
+        <!-- Guests List -->
+        <div class="reveal bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-xl border border-pizza-yellow/30">
+          <div class="flex items-center justify-between mb-6">
+            <h3 class="font-fredoka text-2xl text-pizza-brown dark:text-pizza-yellow">👥 Kelayotganlar</h3>
+            <span id="guest-count" class="bg-pizza-red text-white font-fredoka text-lg px-3 py-1 rounded-full">0</span>
+          </div>
+          <div id="guests-list" class="space-y-3 max-h-72 overflow-y-auto pr-1">
+            <div class="text-center py-8 text-gray-400 dark:text-gray-500">
+              <div class="text-4xl mb-2">🍕</div>
+              <p class="font-nunito">Hali hech kim qo'shilmagan...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== MOVIE VOTE SECTION ==================== -->
+  <section id="vote" class="py-20 px-4" style="background: linear-gradient(180deg, transparent, rgba(120,53,15,0.05), transparent);">
+    <div class="max-w-5xl mx-auto">
+      <div class="text-center mb-14 reveal">
+        <h2 class="section-heading text-5xl md:text-6xl text-pizza-red mb-3">🎬 Qaysi Kino Ko'ramiz?</h2>
+        <p class="font-nunito text-gray-600 dark:text-gray-300 text-lg">Ovoz bering va natijani ko'ring!</p>
+      </div>
+
+      <!-- Voter name input -->
+      <div class="reveal mb-8 max-w-md mx-auto">
+        <label class="font-nunito font-bold text-gray-700 dark:text-gray-200 block mb-2 text-center">👤 Ovoz berish uchun ismingiz:</label>
+        <input type="text" id="voter-name" placeholder="Ismingizni kiriting..."
+               class="w-full border-2 border-gray-200 dark:border-gray-600 rounded-xl px-4 py-3 font-nunito text-center text-gray-700 dark:text-gray-200 dark:bg-gray-700 focus:outline-none focus:border-pizza-red transition-colors" />
+      </div>
+
+      <!-- Movie Cards -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+
+        <!-- Boshpana -->
+        <div class="card-hover reveal bg-white dark:bg-gray-800 rounded-3xl p-6 shadow-xl text-center border-b-4 border-pizza-red">
+          <div class="text-6xl mb-4">🏠</div>
+          <h3 class="font-fredoka text-xl text-gray-800 dark:text-white mb-3">Boshpana</h3>
+          <div class="mb-4">
+            <div class="bg-gray-100 dark:bg-gray-700 rounded-full h-3 overflow-hidden">
+              <div id="bar-Boshpana" class="vote-bar-fill h-full bg-gradient-to-r from-pizza-red to-pizza-orange rounded-full" style="width:0%"></div>
+            </div>
+            <p class="font-nunito text-sm text-gray-500 dark:text-gray-400 mt-1">
+              <span id="votes-Boshpana">0</span> ovoz · <span id="pct-Boshpana">0</span>%
+            </p>
+          </div>
+          <button onclick="castVote('Boshpana')"
+                  class="btn-pizza w-full bg-pizza-red text-white font-fredoka py-2.5 rounded-xl hover:bg-red-700 transition-colors">
+            🗳️ Ovoz Ber
+          </button>
+        </div>
+
+        <!-- Odisseya -->
+        <div class="card-hover reveal bg-white dark:bg-gray-800 rounded-3xl p-6 shadow-xl text-center border-b-4 border-blue-500">
+          <div class="text-6xl mb-4">🌊</div>
+          <h3 class="font-fredoka text-xl text-gray-800 dark:text-white mb-3">Odisseya</h3>
+          <div class="mb-4">
+            <div class="bg-gray-100 dark:bg-gray-700 rounded-full h-3 overflow-hidden">
+              <div id="bar-Odisseya" class="vote-bar-fill h-full bg-gradient-to-r from-blue-400 to-blue-600 rounded-full" style="width:0%"></div>
+            </div>
+            <p class="font-nunito text-sm text-gray-500 dark:text-gray-400 mt-1">
+              <span id="votes-Odisseya">0</span> ovoz · <span id="pct-Odisseya">0</span>%
+            </p>
+          </div>
+          <button onclick="castVote('Odisseya')"
+                  class="btn-pizza w-full bg-blue-500 text-white font-fredoka py-2.5 rounded-xl hover:bg-blue-600 transition-colors">
+            🗳️ Ovoz Ber
+          </button>
+        </div>
+
+        <!-- Interstellar -->
+        <div class="card-hover reveal bg-white dark:bg-gray-800 rounded-3xl p-6 shadow-xl text-center border-b-4 border-purple-500">
+          <div class="text-6xl mb-4">🚀</div>
+          <h3 class="font-fredoka text-xl text-gray-800 dark:text-white mb-3">Interstellar</h3>
+          <div class="mb-4">
+            <div class="bg-gray-100 dark:bg-gray-700 rounded-full h-3 overflow-hidden">
+              <div id="bar-Interstellar" class="vote-bar-fill h-full bg-gradient-to-r from-purple-400 to-purple-600 rounded-full" style="width:0%"></div>
+            </div>
+            <p class="font-nunito text-sm text-gray-500 dark:text-gray-400 mt-1">
+              <span id="votes-Interstellar">0</span> ovoz · <span id="pct-Interstellar">0</span>%
+            </p>
+          </div>
+          <button onclick="castVote('Interstellar')"
+                  class="btn-pizza w-full bg-purple-500 text-white font-fredoka py-2.5 rounded-xl hover:bg-purple-600 transition-colors">
+            🗳️ Ovoz Ber
+          </button>
+        </div>
+
+        <!-- The Dark Knight -->
+        <div class="card-hover reveal bg-white dark:bg-gray-800 rounded-3xl p-6 shadow-xl text-center border-b-4 border-gray-700">
+          <div class="text-6xl mb-4">🦇</div>
+          <h3 class="font-fredoka text-xl text-gray-800 dark:text-white mb-3">The Dark Knight</h3>
+          <div class="mb-4">
+            <div class="bg-gray-100 dark:bg-gray-700 rounded-full h-3 overflow-hidden">
+              <div id="bar-The Dark Knight" class="vote-bar-fill h-full bg-gradient-to-r from-gray-600 to-gray-800 rounded-full" style="width:0%"></div>
+            </div>
+            <p class="font-nunito text-sm text-gray-500 dark:text-gray-400 mt-1">
+              <span id="votes-The Dark Knight">0</span> ovoz · <span id="pct-The Dark Knight">0</span>%
+            </p>
+          </div>
+          <button onclick="castVote('The Dark Knight')"
+                  class="btn-pizza w-full bg-gray-700 text-white font-fredoka py-2.5 rounded-xl hover:bg-gray-800 transition-colors">
+            🗳️ Ovoz Ber
+          </button>
+        </div>
+      </div>
+
+      <!-- Vote message -->
+      <div id="vote-msg" class="hidden text-center font-nunito font-bold py-3 px-6 rounded-2xl mx-auto max-w-sm"></div>
+    </div>
+  </section>
+
+  <!-- ==================== FOOTER ==================== -->
+  <footer class="bg-pizza-brown dark:bg-gray-900 text-white py-10 px-4 text-center">
+    <div class="max-w-4xl mx-auto">
+      <div class="text-5xl mb-4 animate-bounce-slow">🍕</div>
+      <p class="font-fredoka text-2xl md:text-3xl text-pizza-yellow mb-2">Made with 🍕 by Sensey</p>
+      <p class="font-nunito text-white/60 text-sm mb-6">She'rozbek Baxtiyorov · Pizza Party 2024</p>
+      <div class="flex justify-center gap-6 text-2xl">
+        <span class="animate-float" style="animation-delay:0s">🍕</span>
+        <span class="animate-float" style="animation-delay:0.5s">🎬</span>
+        <span class="animate-float" style="animation-delay:1s">🎉</span>
+        <span class="animate-float" style="animation-delay:1.5s">🍕</span>
+      </div>
+      <p class="font-nunito text-white/40 text-xs mt-6">&copy; 2024 Pizza Party. Barcha huquqlar himoyalangan 🍕</p>
+    </div>
+  </footer>
+
+  <!-- ==================== AXIOS CDN ==================== -->
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+  <!-- ==================== SRC MODULES ==================== -->
+  <script type="module" src="src/main.js"></script>
+
+</body>
+</html>
