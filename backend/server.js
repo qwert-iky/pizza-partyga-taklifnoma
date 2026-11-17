@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
 const connectDB = require('./config/db');
 
 // Routes
@@ -14,12 +15,7 @@ connectDB();
 const app = express();
 
 // Middleware
-app.use(
-  cors({
-    origin: ['http://localhost:5173', 'http://localhost:3000'],
-    credentials: true,
-  })
-);
+app.use(cors());
 app.use(express.json());
 
 // API Routes
@@ -29,12 +25,16 @@ app.use('/api/votes', voteRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'OK', message: 'Pizza Party API is running' });
+  res.json({ status: 'OK', message: 'Pizza Party API is running 🍕' });
 });
 
-// 404 handler
-app.use((req, res) => {
-  res.status(404).json({ message: `Route ${req.originalUrl} not found` });
+// ✅ Frontend static fayllarini serve qilish
+const frontendPath = path.join(__dirname, '../frontend');
+app.use(express.static(frontendPath));
+
+// Barcha qolgan so'rovlarni index.html ga yo'naltirish
+app.get('*', (req, res) => {
+  res.sendFile(path.join(frontendPath, 'index.html'));
 });
 
 // Global error handler
@@ -45,5 +45,5 @@ app.use((err, req, res, next) => {
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+  console.log(`🍕 Server running on http://localhost:${PORT}`);
 });

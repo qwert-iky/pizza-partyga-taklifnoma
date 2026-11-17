@@ -2,7 +2,10 @@
 //  api.js — All backend API calls via Axios
 // ============================================================
 
-const API_URL = 'http://localhost:5000/api';
+// Local da localhost, deploy da avtomatik o'sha sayt URL ishlatiladi
+const API_URL = window.location.hostname === 'localhost'
+  ? 'http://localhost:5000/api'
+  : '/api';
 
 // ---- Guests ------------------------------------------------
 
